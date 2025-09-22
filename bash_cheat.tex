@@ -1,0 +1,591 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+
+% Farben für Code
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{keyword}{RGB}{0,0,180}
+\definecolor{comment}{RGB}{0,128,0}
+\definecolor{string}{RGB}{163,21,21}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{keyword}\bfseries,
+  commentstyle=\color{comment},
+  stringstyle=\color{string},
+  numbers=left,
+  numberstyle=\tiny,
+  breaklines=true,
+  frame=single,
+  showstringspaces=false,
+  tabsize=4
+}
+
+% Layout für die Überschriften
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+% Kopf- und Fußzeile
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Bash Cheat Sheet}
+\rhead{\thepage}
+
+\begin{document}
+
+\begin{center}
+	{\LARGE \textbf{Bash Cheat Sheet}} \\[1em]
+	{\large A quick guide to the Bash programming language}
+\end{center}
+
+\vspace{0.5cm}
+
+% Section 1: Basics
+\section{Basics}
+\subsection{Hello, World}
+\begin{lstlisting}[language=bash]
+#!/bin/bash             # Linux
+#!/usr/local/bin/bash   # BSD
+#!/usr/bin/env bash     # Portable across systems
+echo "Hello World!"
+\end{lstlisting}
+
+\subsection{Basic Commands}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|pwd| \> Shows the current working directory \\
+	\> \verb|ls -la| \> Lists all directory contents, including hidden files \\
+	\> \verb|cd /path/| \> Changes to the specified directory \\
+	\> \verb|clear| \> Clears the terminal screen \\
+	\> \verb|man ls| \> Shows documentation for the \verb|ls| command \\
+	\> \verb|!!| \> Executes the last command \\
+	\> \verb|history| \> Shows a list of previous commands \\
+\end{tabbing}
+
+\subsection{Input and Output Terminal}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|echo "Hallo, $name"| \> Prints Hallo and the value of \verb|name| \\
+	\> \verb|read name| \> Reads terminal input into \verb|name| \\
+	\> \verb|read -p "Name please: " name| \> Reads terminal input with a prompt \\
+	\> \verb|read -s| \> Hidden input, useful for passwords \\
+	\> \verb|read -r| \> Prevents interpretation of backslashes \\
+\end{tabbing}
+
+\subsection{Data and Directory Manipulation}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|cp -r /from/path/ /to/path/| \> Copies a directory with its contents \\
+	\> \verb|cp /from/path/* /to/path/| \> Copies the contents of a directory \\
+	\> \verb|mv /from/path/ /to/path/| \> Moves or renames a directory \\
+	\> \verb|mv /from/path/* /to/path/| \> Moves the contents of a directory \\
+	\> \verb|rm -rf thing| \> Deletes a file or directory (force) \\
+	\> \verb|mkdir bunga| \> Creates the directory \verb|bunga| \\
+	\> \verb|touch data.txt| \> Creates an empty file \verb|data.txt| \\
+	\> \verb|cat data.txt| \> Shows the content of \verb|data.txt| \\
+	\> \verb|less data.txt| \> Views content, better for long files \\
+	\> \verb|echo "bunga" > data.txt| \> Writes bunga to the file (overwrites) \\
+	\> \verb|echo "bunga" >> data.txt| \> Appends bunga to the file \\
+	\> \verb|sed 's/heinz/horst/g' data.txt| \> Replaces all heinz with horst in the file \\
+	\> \verb|sed 's/heinz/horst/3' data.txt| \> Replaces the third occurrence of heinz with horst \\
+	\> \verb|awk '{print $1}' data.txt| \> Prints the first column of the file \\
+	\> \verb|awk '/bunga/ {print}' data.txt| \> Prints lines containing bunga \\
+	\> \verb|cut -d "," -f 1 data.csv| \> Extracts the first column from CSV \\
+	\> \verb|cut -d ":" -f 1,3 file.txt| \> Extracts columns 1 and 3 (delimiter \:) \\
+	\> \verb|cut -c 1-5 file.txt| \> Extracts characters 1 to 5 from each line \\
+	\> \verb|cut -d "," -f 2 --complement file.csv| \> Extracts all columns except the second \\
+\end{tabbing}
+
+\subsection{Parameter Expansion}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{80mm} \kill
+	\> \lstinline|${var%s}| \> removes suffix, 180s to 180 \\
+	\> \lstinline|${file%%.*}| \> removes longer suffix, backup.tar.gz to backup \\
+	\> \lstinline|${path#*/}| \> removes prefix, /home/bunga/ to home/bunga/ \\
+	\> \lstinline|${path##*/}| \> removes longer prefix, /home/bunga/bunga.pdf to bunga.pdf \\
+\end{tabbing}
+
+\subsection{Pipe and Redirection}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|command1 | command2| \> Pipes output of \verb|command1| into \verb|command2| \\
+	\> \verb|> | \> Overwrites the file with the new output \\
+	\> \verb|>> | \> Appends output to the end of the file \\
+	\> \verb|< | \> Reads data as input \\
+	\> \verb|< < ( ... ) | \> Output like it is from a data file \\
+	\> \verb|> > ( ... ) | \> Input like it is from a data file \\
+\end{tabbing}
+
+\subsection{Jobs}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|jobs| \> Lists jobs running in the background \\
+	\> \verb|bg \%1| \> Continues a paused job in the background (e.g., job 1) \\
+	\> \verb|fg \%1| \> Brings a background job to the foreground (e.g., job 1) \\
+	\> \verb|kill -STOP $PID| \> Stops a job (replace PID with process ID) \\
+	\> \verb|kill -CONT $PID| \> Continues a stopped job \\
+\end{tabbing}
+
+\subsubsection{backround process}
+\begin{lstlisting}[language=bash]
+  #!/bin/Bash 
+
+  # Process starting 
+  long_running_command & 
+
+  # getting background PID 
+  pid=$! 
+
+  # waiting until background is done 
+  wait "$pid" 
+  
+  # killing background process 
+  kill "$pid"
+
+  # starting a seperated process 
+  sep_command & 
+  disown 
+
+  \end{lstlisting}
+
+\subsection{find}
+\subsubsection*{Example}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+
+# Finding data.txt in /path
+find /path -type f -name "data.txt"
+\end{lstlisting}
+
+\subsubsection*{Parameters}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|-type f| \> Searches for files \\
+	\> \verb|-type d| \> Searches for directories \\
+	\> \verb|-name "bunga"| \> Searches for bunga \\
+	\> \verb|-iname "bUnga"| \> Ignores case (e.g., bUnga, BUNGA) \\
+	\> \verb|-mtime -n| \> Finds files modified in the last n days \\
+	\> \verb|-size +n| \> Finds files larger than n (e.g., +10M for 10MB) \\
+	\> \verb|-exec command {} \;| \> Executes a command on found files \\
+	\> \verb|-print0 | \> seperator is the Nullbyte \\
+\end{tabbing}
+
+\subsection{grep}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|grep "pattern" *.txt| \> Searches for pattern in \.txt files \\
+	\> \verb|grep -i "pattern" *.txt| \> Ignores case \\
+	\> \verb|grep -r "pattern" /path| \> Searches recursively in /path \\
+	\> \verb|grep -n "pattern" *.txt| \> Shows line numbers of matches \\
+	\> \verb|grep -l "pattern" *.txt| \> Lists files containing pattern \\
+	\> \verb|grep -v "pattern" *.txt| \> Shows lines not matching pattern \\
+\end{tabbing}
+
+\subsection{awk}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|awk '{print $1}' data.txt| \> Prints the first column \\
+	\> \verb|awk '/pattern/ {print}' data.txt| \> Prints lines with pattern \\
+	\> \verb|awk -F "," '{print $1}' data.csv| \> Prints the first column of a CSV \\
+	\> \verb|awk '{print NR, $NF}' file.txt| \> Prints line number and last column \\
+\end{tabbing}
+
+\subsection{sort}
+\begin{tabbing}
+	\= \hspace{60mm} \= \hspace{80mm} \kill
+	\> \verb|sort file.txt| \> Sorts lines of \verb|file.txt| alphabetically \\
+	\> \verb|sort -r file.txt| \> Sorts in reverse order \\
+	\> \verb|sort -n file.txt| \> Sorts numerically \\
+	\> \verb|sort -k 2 file.txt| \> Sorts by the second column \\
+	\> \verb|sort -t "," -k 1 data.csv| \> Sorts CSV by the first column \\
+	\> \verb|sort -u file.txt| \> Sorts and removes duplicate lines \\
+\end{tabbing}
+
+\subsection{tar}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|tar -cvf archive.tar dir/| \> Creates an archive \\
+	\> \verb|tar -zcvf archive.tar.gz dir/| \> Creates a gzip archive \\
+	\> \verb|tar -xvf archive.tar| \> Extracts an archive \\
+	\> \verb|tar -tvf archive.tar| \> Shows the archive contents \\
+\end{tabbing}
+
+\subsection{Variables and Arrays}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|env| \> Shows all environment variables \\
+	\> \verb|bunga="1"| \> Creates variable \verb|bunga| with value 1 \\
+	\> \verb|bunga=("1" "2")| \> Creates an array \verb|bunga| \\
+	\> \verb|echo $bunga| \> Prints the variable (or first array element) \\
+	\> \verb|export bunga| \> Makes \verb|bunga| available to subprocesses \\
+	\> \verb|"${val1}${val2}" | \> adds strings together \\
+\end{tabbing}
+
+\subsection{Spezial Variables}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb| $0 | \> name of the current running script \\
+	\> \verb| $1, $2 ..... | \> arguments \\
+	\> \verb| $# | \> number of arguments \\
+	\> \verb| $@ | \> all arguments in " " \\
+	\> \verb| $* | \> all arguments as strings \\
+	\> \verb| $$ | \> PID from current process \\
+	\> \verb| $! | \> PID from last backround process \\
+	\> \verb| $? | \> exit-code from the last command \\
+	\> \verb| $_ | \> last arguments from the last command \\
+	\> \verb| $- | \> current shell option \\
+	\> \verb| $PWD | \> current working directory \\
+	\> \verb| $UID | \> User-ID \\
+	\> \verb| $EUID | \> effectiv User-ID \\
+\end{tabbing}
+
+\subsection{Array read in}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|mapfile | \> reads from Source into the Array \\
+	\> \verb| -d | \> seperator \\
+	\> \verb| -d '' | \> Nullbyte as seperator (for -print0)\\
+	\> \verb| -t | \> removes the seperator \\
+	\> \verb| -n COUNT | \> reads from COUNT line \\
+	\> \verb| -s COUNT | \> jumps over COUNT line \\
+	\> \verb| -O COUNT | \> beginns at COUNT line \\
+\end{tabbing}
+
+\subsection{Variables with Parameters}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|path=${1:-bunga}| \\
+	\> \verb|$1| \> first Paramter is used \\
+	\> \verb|$2| \> second Paramter is used \\
+	\> \verb|:-| \> use bunga if Paramter is empty \\
+\end{tabbing}
+
+\subsection{String manipulation}
+\subsubsection{Adding}
+\begin{lstlisting}[language=bash]
+#!/bin/bash 
+val1="heinz"
+val2="horst"
+
+new="${heinz}_${horst}"
+echo "$new"
+
+Output: heinz_horst
+\end{lstlisting}
+
+\subsubsection{Basename}
+\begin{lstlisting}[language=bash]
+#!/bin/bash 
+
+path="$HOME/Downloads/image.png"
+
+# extracting the filename 
+filename="${path##*/}" 
+
+# extracting the name without sufix 
+path=$(dirname "$filename")
+file=${basename "%.*"} 
+
+# or 
+file=$(basename "$filename" .txt)
+path=$(dirname "$filename")
+\end{lstlisting}
+
+\subsubsection*{Arrays and Loops}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|${array[@]}| \> All items in the array \\
+	\> \verb|${!array[@]}| \> Iterates through indices \\
+	\> \verb|${#array[@]}| \> Length of the array \\
+	\> \verb|${array[$i]}| \> Shows item at index \verb|$i| \\
+	\> \verb|myarray+=("x")| \> adds one item \\
+\end{tabbing}
+
+\subsection{Operators}
+\subsubsection*{Arithmetic Operators}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|(( ))| \> math has to be in double brakets \\
+	\> \verb|+| \> Addition \\
+	\> \verb|-| \> Subtraction \\
+	\> \verb|*| \> Multiplication \\
+	\> \verb|/| \> Division \\
+	\> \verb|\%| \> Modulus (remainder of division) \\
+\end{tabbing}
+
+\subsubsection*{String Comparison Operators}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|==| \> Equal to \\
+	\> \verb|!=| \> Not equal to \\
+	\> \verb|<| \> Less than (ASCII order) \\
+	\> \verb|>| \> Greater than (ASCII order) \\
+	\> \verb|=~| \> Regex \\
+	\> \verb|=~ ^...| \> checks from the beginning \\
+	\> \verb|=~ ...$| \> checks from the end \\
+	\> \verb|=~ [abc] | \> includes letters \\
+	\> \verb|=~ [0-9]| \> includes numbers \\
+	\> \verb|=~ [...]{n}| \> includes n characters \\
+\end{tabbing}
+
+\subsubsection*{Comparison Operators}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|-eq| \> Equal to \\
+	\> \verb|-ne| \> Not equal to \\
+	\> \verb|-lt| \> Less than \\
+	\> \verb|-le| \> Less than or equal to \\
+	\> \verb|-gt| \> Greater than \\
+	\> \verb|-ge| \> Greater than or equal to \\
+\end{tabbing}
+
+\subsubsection*{Logical Operators}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|&&| \> Logical AND \\
+	\> \verb!||! \> Logical OR \\
+	\> \verb|!| \> Logical NOT \\
+\end{tabbing}
+
+\subsubsection*{File Operators}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|-f| \> checks if file exists \\
+	\> \verb|-e| \> Checks if file or directory exists \\
+	\> \verb|-d| \> Checks if directory exists \\
+	\> \verb|-s| \> Checks if file is not empty \\
+	\> \verb|-r| \> checks if file is readable \\
+	\> \verb|-w| \> checks if file is writable \\
+	\> \verb|-x| \> checks if file is executable \\
+	\> \verb|-z| \> checks if empty (zero length) \\
+	\> \verb|-n| \> checks if not empty (non-zero length) \\
+	\> \verb|-h| \> checks if symbolic link \\
+\end{tabbing}
+
+\subsection{Testing}
+\begin{lstlisting}[language=bash]
+#!/bin/bash 
+if [[ ... ]]; then 
+  echo "true"
+fi 
+
+[[ ... ]]                   # 0 if true, 1 if false 
+[[ ... ]] || command        # if testing is false then command 
+[[ ... ]] && command        # if testing is true then command 
+
+[[ ... ]] || continue       # only in a Loop (if, while, until) 
+                            # stopps the current loop run, 
+                            # moves on with the next iteration
+[[ ... ]] || return         # only in a Function 
+                            # stopps the function
+[[ ... ]] || exit           # ends the script
+
+# numbers
+[[ 5 -eq 5 ]]               # 5 = 5 
+[[ 7 -ne 3 ]]               # not equal 
+[[ 5 -gt 3 ]]               # 5 > 3 
+[[ 2 -lt 4 ]]               # 2 < 4 
+[[ 3 -ge 3 ]]               # 3 >= 3 
+[[ 4 -le 6 ]]               # 4 <= 6
+[[ $a -gt 3 && $b -lt 10 ]]
+[[ $a -eq 1 || $b -eq 2 ]]
+
+# strings 
+[[ $a = "foo" ]]            # equal 
+[[ $a != "foo" ]]           # not equal 
+[[ -z $a ]]                 # is empty (zero length)
+[[ -n $a ]]                 # is not empty (non-zero length)
+[[ $a == f* ]]               # pattern matches, beginning with f 
+[[ $a =~ ^[0-9]+$ ]]        # contains only numbers 
+[[ $a =~ ^bunga ]]          # begins with bunga 
+[[ $a =~ bunga$ ]]          # ends with bunga 
+[[ $a =~ \.pdf$ ]]          # is a pdf file 
+[[ $a =~ ^[a-z]{3}[0-9]{5}$ ]]  # three letters and five numbers
+
+# data 
+[[ -f data.txt ]]           # is file existing?
+[[ -d data ]]               # is directory existing? 
+[[ -e path/data ]]          # is is file or directory existing?
+[[ -r data.txt ]]           # is data.txt readable? 
+[[ -w data.txt ]]           # is data.txt writable? 
+[[ -x script.sh ]]          # is script.sh executable?
+\end{lstlisting}
+
+\subsection{Word Count WC}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|wc data.txt| \> counts lines, words, bytes \\
+	\> \verb| -l | \> counts lines \\
+	\> \verb| -w | \> counts words \\
+	\> \verb| -c | \> counts Bytes \\
+	\> \verb| -m | \> counts characters \\
+	\> \verb| -L | \> lenth of the longest line \\
+\end{tabbing}
+
+\subsection{Loops}
+\subsubsection*{for}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+for i in {1..5}; do
+  echo $i
+done
+
+# Arrays with items
+for item in "${array[@]}"; do 
+  echo "$item"
+done 
+
+# Arrays with indices
+for i in "${!array[@]}"; do 
+  echo "Index $i: ${array[$i]}"
+done
+\end{lstlisting}
+
+\subsubsection*{while}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+count=2
+
+while [ $count -le 5 ]; do
+  echo $count
+  ((count++))
+done
+
+# Arrays
+i=0 
+while [ $i -lt ${#array[@]} ]; do 
+  echo "${array[$i]}"
+  ((i++))  % Fixed: Corrected {{i++}} to ((i++))
+done
+\end{lstlisting}
+
+\subsubsection*{until}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+count=1
+until [ $count -gt 5 ]; do
+  echo $count
+  ((count++))
+done
+
+# Arrays 
+i=0 
+until [ $i -ge ${#array[@]} ]; do 
+  echo "${array[$i]}"
+  ((i++))  % Fixed: Corrected {{i++}} to ((i++))
+done
+\end{lstlisting}
+
+\subsubsection*{break and continue}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+for i in {1..5}; do
+  if [ $i -eq 3 ]; then
+    continue              # jumps over i=3
+  fi
+  echo "Number $i"
+  if [ $i -eq 4 ]; then
+    break                 # ends the loop when i=4
+  fi
+done
+\end{lstlisting}
+
+\subsection{if}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+num=10
+if [ $num -gt 10 ]; then
+  echo "Number is greater than 10"
+elif [ $num -eq 10 ]; then
+  echo "Number is exactly 10"
+else
+  echo "Number is less than 10"
+fi
+\end{lstlisting}
+
+\subsection{case}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+case $variable in
+  pattern1) commands ;; 
+  pattern2) commands ;; 
+  *) default_commands ;;
+esac
+\end{lstlisting}
+
+\subsection{Exit Codes}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+if [ "$1" == "test" ]; then  % Fixed: Added missing [
+  exit 0 
+else 
+  exit 1  # 1 to 255
+fi
+echo $?  # Shows the last exit code
+\end{lstlisting}
+
+\subsection{Error Handling}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|set -e| \> Ends script on any error \\
+	\> \verb|set +e| \> Deactivates ending on errors \\
+	\> \verb|set -u| \> Treats undefined variables as an error \\
+	\> \verb|set -o pipefail| \> Makes \$? reflect the last failed pipe command \\
+	\> \verb|set +o pipefail| \> Deactivates pipefail \\
+	\> \verb|2> error.log| \> Writes errors to \verb|error.log| \\
+	\> \verb|set -x| \> Activates debugging \\
+	\> \verb|set +x| \> Deactivates debugging \\
+	\> \verb|command 2> /dev/null| \> Suppresses error messages \\
+\end{tabbing}
+
+\subsection{Timestamp}
+\begin{lstlisting}[language=bash]
+#!/bin/bash 
+
+today=$(date +"%Y-%m-%d_%H-%M-%S")
+echo "$today"
+\end{lstlisting}
+
+\subsection{Logging}
+\begin{tabbing}
+	\= \hspace{30mm} \= \hspace{50mm} \kill
+	\> \verb|/var/log/| \> Common path for Linux logs (requires root) \\
+	\> \verb|logger "message"| \> Writes message to system log \\
+\end{tabbing}
+
+\subsubsection*{Custom Logging Example}
+\begin{lstlisting}[language=bash]
+echo "$(date '+%Y-%m-%d %H:%M:%S') - message" >> ~/logs/logfile.log
+\end{lstlisting}
+
+\subsection{Functions}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+my_function() {
+  echo "Hello World!"
+}
+my_function
+
+# function with parameters 
+ym_function() {
+  local num=$1 
+  local max=$2 
+  echo "num: $num max: $max"
+}
+
+ym_function 3 45
+\end{lstlisting}
+
+\subsection{alias}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+# Like functions, but simpler; no parameters, often used to combine commands
+alias myfunc='ls -la'
+\end{lstlisting}
+
+\end{document}
