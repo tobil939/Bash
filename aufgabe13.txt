@@ -1,0 +1,24 @@
+🧩 Aufgabe:
+
+Schreibe ein Bash-Skript namens countfiles.sh, das Folgendes macht:
+
+Es nimmt einen Pfad als Argument entgegen (z. B. ./countfiles.sh /home/tobil/test).
+
+Das Skript soll:
+
+die Anzahl der Dateien im angegebenen Verzeichnis zählen,
+
+die Anzahl der Unterordner,
+
+und die Gesamtgröße aller Dateien in diesem Pfad berechnen.
+
+Gib das Ergebnis schön formatiert aus, z. B. so:
+
+📁 Verzeichnis: /home/tobil/test
+🧾 Dateien: 42
+📂 Unterordner: 8
+💾 Gesamtgröße: 12M
+
+💡 Bonus (optional):
+
+Wenn kein Pfad angegeben wurde, soll das Skript automatisch im aktuellen Verzeichnis (pwd) suchen.

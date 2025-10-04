@@ -1,0 +1,21 @@
+Aufgabe: Top-5 größte Dateien finden und loggen
+
+Schreibe ein Bash-Skript, das:
+
+Einen Verzeichnispfad als Argument entgegennimmt (-p /pfad/zum/dir).
+
+Prüft, ob das Verzeichnis existiert – wenn nicht, mit Fehlercode beendet.
+
+Alle Dateien in diesem Verzeichnis rekursiv durchsucht.
+
+Die Top 5 größten Dateien findet und ihre Größe + Pfad ausgibt.
+
+Das Ergebnis mit Zeitstempel in eine Logdatei (/tmp/topfiles.log) schreibt.
+
+💡 Bonus:
+
+Füge eine -h Option hinzu, die eine kurze Hilfe anzeigt.
+
+Wenn keine Option angegeben wird, soll das Skript einfach das aktuelle Verzeichnis (.) durchsuchen.
+
+Willst du, dass ich dir auch ein Grundgerüst für das Skript mit getopts schreibe, oder möchtest du lieber komplett selbst loslegen?

@@ -1,107 +1,92 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-workingpath="$HOME/test/logs"
-logfile="$HOME/test/logs/loggins.log"
-logsum="$HOME/test/logs/cleanup_summary.log"
-word1="DEBUG"
-word2="ERROR"
-sufix=".cleaned"
-finds=()
+dir="$HOME/test"
+logfile="/var/tmp/logging.log"
+dirnum="0"
+filenum="0"
 
-handler() {
+get_timestamp() {
+  timestamp=$(date +"%Y_%m_%d__%H:%M:%S ##########")
+}
+
+logging() {
+  local dir
+  echo "Starting logging"
+  echo "Creating logfile if nessesery"
+  if [[ ! -f "$logfile" ]]; then
+    echo "Logfile will be created"
+    dir=$(dirname "$logfile")
+    if [[ ! -d "$dir" ]]; then
+      mkdir -p "$dir" || exit 1
+    fi
+    touch "$logfile" || exit 1
+  else
+    echo "$logfile exists"
+  fi
+  get_timestamp
+  echo "$timestamp first entry" | tee -a "$logfile"
+}
+
+handling() {
   local error
-  error="$?"
-
+  error="$1"
+  get_timestamp
   case $error in
-  0) echo "Everything went fine" ;;
-  1) echo "Logging can't be initialized" ;;
-  2) echo "Nothing was found" ;;
-  3) echo "$word1 or $word2 where not found" ;;
+  0) echo "$timestamp Script ended as planned" | tee -a "$logfile" ;;
+  1) echo "$timestamp something happend with the logfile" ;;
+  2) echo "$timestamp ended after Help" | tee -a "$logfile" ;;
+  *) echo "$timestamp Unknown error: $error" | tee -a "$logfile" ;;
   esac
 }
 
-logini() {
-  local file
-  local path
-  timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-
-  file=$(basename "$logfile")
-  path=$(dirname "$logfile")
-
-  if [[ -d "$path" ]]; then
-    echo "Log Path exists"
-  else
-    mkdir -p "$path"
-    echo "Log Path was created"
-  fi
-
-  [[ -d "$path" ]] || exit 1
-
-  if [[ -f "$logfile" ]]; then
-    echo "Log File exists"
-  else
-    touch "$logfile"
-    echo "Log File was created"
-  fi
-
-  [[ -f "$logfile" ]] || exit 1
-
-  file=$(basename "$logsum")
-  path=$(dirname "$logsum")
-
-  if [[ -f "$logsum" ]]; then
-    echo "Log Sum File exists"
-  else
-    touch "$logsum"
-    echo "Log Sum File was created"
-  fi
-
-  echo "$timestamp first log entry" >>"$logsum"
-  echo "$timestamp first log entry" | tee -a "$logfile"
+finddirs() {
+  get_timestamp
+  dirnum=$(find "$dir" -type d -iname "*" | wc -l) || exit 2
+  echo "$timestamp directorys found $dirnum" | tee -a "$logfile"
 }
 
-findings() {
-  local length
-  local countn
-  local count1
-  local count2
-  local file
-
-  mapfile -d '' finds < <(find "$workingpath" -type f -iname "*.log" -mtime +7 -print0)
-  length=${#finds[@]}
-  [[ "$length" -eq 0 ]] || exit 2
-  echo "$timestamp $length many files where found" | tee -a "$logfile"
-
-  for file in "${finds[@]}"; do
-    countn=$(grep -ci "$word1" "$file")
-    ((count1 = count1 + countn))
-    [[ count1 -eq 0 ]] || exit 3
-  done
-  echo "$timestamp $count1 many files where found with $word1" | tee -a "$logfile"
-  echo "$timestamp $count1 many files where found with $word1" >>"$logsum"
-
-  for file in "${finds[@]}"; do
-    countn=$(grep -ci "$word2" "$file")
-    ((count2 = count2 + countn))
-    [[ count2 -eq 0 ]] || exit 3
-  done
-  echo "$timestamp $count2 many files where found with $word2" | tee -a "$logfile"
-  echo "$timestamp $count2 many files where found with $word2" >>"$logsum"
+findfile() {
+  get_timestamp
+  filenum=$(find "$dir" -type f -iname "*" | wc -l) || exit 3
+  echo "$timestamp files found $filenum" | tee -a "$logfile"
 }
 
-seddings() {
-  local file
-  for file in "${finds[@]}"; do
-    sed -E "/$word1/Id" "$file" >"$file.$sufix"
-    echo "$timestamp $file was changed" | tee -a "$logfile"
-    echo "$timestamp $file was changed" >>"$logsum"
-    stat -c "Name: %n | Size: %s | Datatype: %F" "$file" >>"$logsum"
+checkarg() {
+  get_timestamp
+  OPTERR=0
+  while getopts "p:h" opt; do
+    case $opt in
+    p)
+      p_arg="$OPTARG"
+      echo "$timestamp -p was added with $p_arg"
+      ;;
+    h)
+      tee -a "$logfile" <<EOF
+-h help was selected
+$dir will be searched
+the count of the files and dirs 
+will be printed
+-p /path/
+/path/ will be searched 
+the count of the files and dirs 
+will be printed 
+logging will be in $logfile
+EOF
+      exit 2
+      ;;
+    \?) echo "$timestamp Unvalid argument" | tee -a "$logfile" ;;
+    :) echo "$timestamp Option needs an argumen" | tee -a "$logfile" ;;
+    esac
   done
+  [[ -n "$p_arg" ]] && dir=$p_arg
 }
 
-logini
-findings
-seddings
-handler
+trap 'handling $?' EXIT
 
-trap handler EXIT
+logging
+checkarg "$@"
+finddirs
+findfile
+
+get_timestamp
+echo "$timestamp $dir was searched, $dirnum and $filenum found" | tee -a "$logfile"
